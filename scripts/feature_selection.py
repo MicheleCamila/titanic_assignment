@@ -12,8 +12,11 @@ def correlation_analysis(df, target_col='Survived'):
     print("Correlation Analysis")
     print("="*50)
     
+    # Select only numeric columns for correlation analysis
+    df_numeric = df.select_dtypes(include=[np.number])
+    
     # Calculate correlations
-    corr_matrix = df.corr()
+    corr_matrix = df_numeric.corr()
     
     # Plot correlation matrix
     plt.figure(figsize=(12, 8))
@@ -21,8 +24,7 @@ def correlation_analysis(df, target_col='Survived'):
                 fmt='.2f', linewidths=0.5)
     plt.title('Feature Correlation Matrix')
     plt.tight_layout()
-    plt.savefig('../notebooks/correlation_matrix.png')
-    plt.show()
+    plt.savefig('notebooks/correlation_matrix.png')
     
     # Find highly correlated features (|corr| > 0.8)
     high_corr = []
@@ -68,8 +70,7 @@ def feature_importance_rf(X, y, feature_names):
     plt.xlabel('Importance')
     plt.title('Top 15 Feature Importance (Random Forest)')
     plt.tight_layout()
-    plt.savefig('../notebooks/feature_importance.png')
-    plt.show()
+    plt.savefig('notebooks/feature_importance.png')
     
     print("\nFeature Importance Rankings:")
     print(importance_df.head(15))
@@ -112,6 +113,9 @@ def select_final_features(df, target_col='Survived', method='combined'):
     # Prepare data
     X = df.drop(columns=[target_col])
     y = df[target_col]
+    
+    # Select only numeric columns for feature selection
+    X = X.select_dtypes(include=[np.number])
     feature_names = X.columns.tolist()
     
     # Correlation analysis
@@ -179,13 +183,13 @@ def select_final_features(df, target_col='Survived', method='combined'):
 
 if __name__ == "__main__":
     # Load engineered data
-    train_feat = pd.read_csv('../data/train_engineered.csv')
+    train_feat = pd.read_csv('data/train_engineered.csv')
     
     # Select features
     final_features, importance_df, rankings = select_final_features(train_feat)
     
     # Save selected features list
-    with open('../data/selected_features.txt', 'w') as f:
+    with open('data/selected_features.txt', 'w') as f:
         for feat in final_features:
             f.write(f"{feat}\n")
     

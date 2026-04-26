@@ -21,7 +21,7 @@ def extract_title(df):
     df_feat = df.copy()
     
     # Extract title
-    df_feat['Title'] = df['Name'].str.extract(' ([A-Za-z]+)\.', expand=False)
+    df_feat['Title'] = df['Name'].str.extract(r' ([A-Za-z]+)\.', expand=False)
     
     # Group rare titles
     title_mapping = {
@@ -160,8 +160,7 @@ def engineer_features(train, test):
         axes[1,2].set_title('Survival Rate by Title')
     
     plt.tight_layout()
-    plt.savefig('../notebooks/feature_engineering.png')
-    plt.show()
+    plt.savefig('notebooks/feature_engineering.png')
     
     # Encode features
     train_encoded = encode_features(train_feat)
@@ -195,13 +194,13 @@ def engineer_features(train, test):
 
 if __name__ == "__main__":
     # Load cleaned data
-    train_clean = pd.read_csv('../data/train_cleaned.csv')
-    test_clean = pd.read_csv('../data/test_cleaned.csv')
+    train_clean = pd.read_csv('data/train_cleaned.csv')
+    test_clean = pd.read_csv('data/test_cleaned.csv')
     
     # Engineer features
     train_feat, test_feat = engineer_features(train_clean, test_clean)
     
     # Save engineered features
-    train_feat.to_csv('../data/train_engineered.csv', index=False)
-    test_feat.to_csv('../data/test_engineered.csv', index=False)
+    train_feat.to_csv('data/train_engineered.csv', index=False)
+    test_feat.to_csv('data/test_engineered.csv', index=False)
     print("\nEngineered data saved to data/train_engineered.csv and data/test_engineered.csv")

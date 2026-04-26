@@ -1,0 +1,9 @@
+Age
+IsAlone
+FamilySize
+Age_Title
+Pclass
+Age_Missing
+FarePerPerson
+Fare_Log
+Title_Num

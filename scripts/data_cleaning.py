@@ -8,6 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Use non-interactive backend to prevent blocking
+plt.switch_backend('Agg')
+
 def load_data(train_path, test_path):
     """Load the Titanic dataset"""
     train = pd.read_csv(train_path)
@@ -48,8 +51,8 @@ def handle_missing_values(train, test):
     # 1. Age - impute with median
     age_median = train['Age'].median()
     print(f"\n1. Age: Imputing {train['Age'].isnull().sum()} missing values with median: {age_median:.1f}")
-    train_clean['Age'].fillna(age_median, inplace=True)
-    test_clean['Age'].fillna(age_median, inplace=True)
+    train_clean['Age'] = train_clean['Age'].fillna(age_median)
+    test_clean['Age'] = test_clean['Age'].fillna(age_median)
     
     # Create missing indicator
     train_clean['Age_Missing'] = train['Age'].isnull().astype(int)
@@ -60,21 +63,21 @@ def handle_missing_values(train, test):
     if train['Embarked'].isnull().sum() > 0:
         embarked_mode = train['Embarked'].mode()[0]
         print(f"\n2. Embarked: Filling {train['Embarked'].isnull().sum()} missing with mode: {embarked_mode}")
-        train_clean['Embarked'].fillna(embarked_mode, inplace=True)
+        train_clean['Embarked'] = train_clean['Embarked'].fillna(embarked_mode)
     
     # 3. Fare - fill with median in test
     if test['Fare'].isnull().sum() > 0:
         fare_median = train['Fare'].median()
         print(f"\n3. Fare: Filling {test['Fare'].isnull().sum()} missing in test with median: {fare_median:.2f}")
-        test_clean['Fare'].fillna(fare_median, inplace=True)
+        test_clean['Fare'] = test_clean['Fare'].fillna(fare_median)
     
     # 4. Cabin - create indicator and drop
     cabin_missing_pct = (train['Cabin'].isnull().sum() / len(train)) * 100
     print(f"\n4. Cabin: {cabin_missing_pct:.1f}% missing - dropping column")
     train_clean['Cabin_Missing'] = train['Cabin'].isnull().astype(int)
     test_clean['Cabin_Missing'] = test['Cabin'].isnull().astype(int)
-    train_clean.drop('Cabin', axis=1, inplace=True)
-    test_clean.drop('Cabin', axis=1, inplace=True)
+    train_clean = train_clean.drop('Cabin', axis=1)
+    test_clean = test_clean.drop('Cabin', axis=1)
     print("   - Added 'Cabin_Missing' indicator, dropped original column")
     
     return train_clean, test_clean
@@ -168,8 +171,7 @@ def handle_outliers(train_clean, test_clean):
     axes[1,1].set_xlabel('Fare')
     
     plt.tight_layout()
-    plt.savefig('../notebooks/outlier_treatment.png')
-    plt.show()
+    plt.savefig('notebooks/outlier_treatment.png')
     
     return train_clean, test_clean
 
@@ -180,7 +182,7 @@ def main():
     print("="*60)
     
     # Load data
-    train, test = load_data('../data/train.csv', '../data/test.csv')
+    train, test = load_data('data/train.csv', 'data/test.csv')
     
     # Analyze missing values
     analyze_missing_values(train, "Training Data")
@@ -196,8 +198,8 @@ def main():
     train_clean, test_clean = handle_outliers(train_clean, test_clean)
     
     # Save cleaned data
-    train_clean.to_csv('../data/train_cleaned.csv', index=False)
-    test_clean.to_csv('../data/test_cleaned.csv', index=False)
+    train_clean.to_csv('data/train_cleaned.csv', index=False)
+    test_clean.to_csv('data/test_cleaned.csv', index=False)
     print("\n" + "="*60)
     print("CLEANING COMPLETED SUCCESSFULLY!")
     print("="*60)
